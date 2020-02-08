@@ -1,0 +1,21 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+require(tidyverse)
+```
+
+```{r}
+myfun <- function(xvar){
+    1/1/(1+exp(-xvar + 10))
+}
+curve(myfun, from=0, to=20)
+```
+
+```{r}
+ggplot(data.frame(x=c(0, 20)), aes(x=x)) + 
+    stat_function(fun=myfun, geom="line")
+```
+

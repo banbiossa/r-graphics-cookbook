@@ -1,0 +1,601 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Chap 15: Getting your data into shape
+
+```{r}
+require(tidyverse)
+require(gcookbook)
+```
+
+```{r}
+heightweight
+```
+
+```{r}
+str(heightweight)
+```
+
+```{r}
+g = c("A", "B", "C")
+x = 1:3
+dat = data.frame(g, x)
+dat
+```
+```{r}
+lst = list(group=g, value=x)
+lst
+dat = as.data.frame(lst)
+dat
+```
+
+```{r}
+data_frame(g, x)
+```
+
+```{r}
+print(as_tibble(dat))
+```
+
+```{r}
+str(ToothGrowth)
+```
+
+```{r}
+summary(ToothGrowth)
+```
+
+```{r}
+tg = ToothGrowth
+tg$supp = as.character(tg$supp)
+str(tg)
+```
+
+```{r}
+ToothGrowth %>%
+    mutate(newcol = NA)
+```
+
+```{r}
+vec = rep(c(1, 2), 30)
+ToothGrowth %>%
+    mutate(newcol = vec)
+```
+
+```{r}
+ToothGrowth2 = ToothGrowth
+ToothGrowth2$newcol = NA
+ToothGrowth2$newcol = c(1, 2)
+ToothGrowth2
+```
+
+```{r}
+ToothGrowth2 %>%
+    select(-len)
+```
+
+```{r}
+ToothGrowth2 %>%
+    select(-len, -supp)
+```
+
+```{r}
+ToothGrowth2 %>%
+    select(dose)
+```
+
+```{r}
+tg_mod = ToothGrowth %>%
+    rename(length=len)
+
+ToothGrowth %>%
+    rename(
+        length = len,
+        supplement_type = supp
+    )
+```
+
+```{r}
+names(ToothGrowth2)
+```
+
+```{r}
+ToothGrowth %>%
+    select(dose, len, supp)
+```
+
+```{r}
+ToothGrowth %>%
+    select(dose, everything())
+```
+
+```{r}
+ToothGrowth[c("dose", "len", "supp")]
+```
+
+```{r}
+ToothGrowth[c("dose", "len", "supp")]
+```
+```{r}
+ToothGrowth[,c("dose", "len", "supp")]
+```
+
+```{r}
+ToothGrowth["dose"]
+```
+
+```{r}
+ToothGrowth[, "dose", drop=FALSE]
+```
+
+```{r}
+climate %>%
+    filter(Source == "Berkeley" & Year >= 1990 & Year <= 2000)
+```
+
+```{r}
+climate %>%
+    select(Year, Anomaly10y)
+```
+
+```{r}
+climate %>%
+    filter(Source == "Berkeley" & Year >= 1990 & Year <= 2000) %>%
+    select(Year, Anomaly10y)
+```
+
+```{r}
+slice(climate, 1:100)
+```
+
+```{r}
+climate[climate$Source == "Berkeley", ]
+```
+
+```{r}
+sizes = factor(c("small", "large", "large", "small", "medium"))
+sizes
+```
+
+```{r}
+factor(sizes, levels=c("small", "medium", "large"))
+```
+
+```{r}
+sizes = factor(c("small", "large", "large", "small", "medium"),
+levels=c("small", "medium", "large"))
+sizes
+```
+
+```{r}
+factor(sizes, levels=rev(levels(sizes)))
+```
+
+```{r}
+fct_relevel(sizes, "small", "medium", "large")
+```
+
+```{r}
+iss = InsectSprays
+iss$spray
+
+ggplot(iss, aes(x=spray, y=count)) + 
+    geom_boxplot()
+```
+
+```{r}
+iss$spray = reorder(iss$spray, iss$count, FUN = mean)
+iss$spray
+ggplot(iss, aes(x=spray, y=count)) + 
+    geom_boxplot()
+```
+
+```{r}
+iss$spray = reorder(iss$spray, iss$count, FUN = median)
+iss$spray
+ggplot(iss, aes(x=spray, y=count)) + 
+    geom_boxplot()
+
+```
+
+```{r}
+sizes = factor(c("small", "large", "large", "small", "medium"))
+sizes
+```
+
+```{r}
+fct_recode(sizes, S="small", M="medium", L="large")
+```
+
+```{r}
+old = c("small", "medium", "large")
+new = c("S", "M", "L")
+```
+
+```{r}
+mappings = setNames(old, new)
+mappings
+```
+
+```{r}
+args = c(list(sizes), mappings)
+args
+```
+
+```{r}
+str(args)
+```
+
+```{r}
+do.call(fct_recode, args)
+```
+
+```{r}
+?do.call
+```
+
+```{r}
+?fct_recode
+```
+
+```{r}
+sizes = factor(c("small", "large", "large", "small", "medium"))
+
+levels(sizes)[levels(sizes) == "large"] <- "L"
+sizes
+```
+
+```{r}
+sizes = factor(c("small", "large", "large", "small", "medium"))
+levels(sizes) = list(S="small", M="medium", L="large")
+sizes
+```
+
+```{r}
+sizes = factor(c("small", "large", "large", "small", "medium"))
+levels(sizes)[1] <- "L"
+sizes
+```
+
+```{r}
+sizes = factor(c("small", "large", "large", "small", "medium"))
+sizes = sizes[1:3]
+sizes
+```
+
+```{r}
+droplevels(sizes)
+```
+
+```{r}
+fct_drop(sizes)
+```
+
+```{r}
+sizes = factor(c("small", "large", "large", "small", "medium"))
+sizes
+
+recode(sizes, small="S", medium="M", large="L")
+
+```
+
+```{r}
+recode(sizes, "small"="S", "medium"="M", "large"="L")
+```
+
+```{r}
+pg = PlantGrowth[c(1,2,11,21,22),]
+pg
+```
+
+```{r}
+recode(pg$group, ctrl="No", trt1="Yes", trt2="Yes")
+```
+
+```{r}
+recode(as.character(pg$group), ctrl="No", trt1="Yes", trt2="Yes")
+```
+
+```{r}
+fct_recode(pg$group, No="ctrl", Yes="trt1", Yes="trt2")
+```
+
+```{r}
+pg = PlantGrowth
+pg$wtclass = cut(pg$weight, breaks=c(0, 5, 6, Inf))
+pg
+```
+
+```{r}
+pg$wtclass = cut(pg$weight, breaks=c(0, 5, 6, Inf), labels = c("S", "M", "L"))
+pg
+```
+
+```{r}
+heightweight
+```
+
+```{r}
+heightweight %>%
+    mutate(heightCm = heightIn * 2.54)
+```
+
+```{r}
+heightweight %>%
+    mutate(
+        heightCm = heightIn/2.54,
+        weightKg = weightLb/2.204,
+    )
+
+```
+
+```{r}
+require(MASS)
+```
+
+```{r}
+cabbages %>%
+    group_by(Cult) %>%
+    mutate(DevWt = HeadWt - mean(HeadWt))
+```
+
+```{r}
+cabbages %>%
+    mutate(DevWt = HeadWt - mean(HeadWt))
+```
+```{r}
+
+cb = cabbages %>%
+    group_by(Cult) %>%
+    mutate(DevWt = HeadWt - mean(HeadWt))
+```
+
+```{r}
+ggplot(cb, aes(x=Cult, y=HeadWt)) + 
+    geom_boxplot()
+ggplot(cb, aes(x=Cult, y=DevWt)) + 
+    geom_boxplot()
+```
+
+```{r}
+cabbages %>%
+    group_by(Cult, Date) %>%
+    mutate(
+        DevWt = HeadWt - mean(HeadWt),
+        DevVitC = VitC - mean(VitC)
+    )
+```
+
+```{r}
+cabbages %>%
+    group_by(Cult, Date) %>%
+    summarise(
+        Weight = mean(HeadWt),
+        VitC = mean(VitC)
+    )
+```
+
+```{r}
+summarise(cabbages, Weight=mean(HeadWt))
+```
+
+```{r}
+cabbages %>%
+    group_by(Cult, Date) %>%
+    summarise(
+        Weight = mean(HeadWt),
+        VitC = mean(VitC),
+        n = n()
+    )
+
+```
+
+```{r}
+c1 = cabbages
+c1$HeadWt[c(1, 20, 45)] = NA
+```
+
+```{r}
+c1 %>%
+    group_by(Cult, Date) %>%
+    summarise(
+        Weight = mean(HeadWt, na.rm = T),
+        VitC = mean(VitC, na.rm = T),
+        n = n()
+    )
+
+```
+
+```{r}
+c2 = cabbages %>%
+    filter(!(Cult == "c52" & Date=="d21"))
+c2
+c2a = c2 %>%
+    group_by(Cult, Date) %>%
+    summarise(Weight = mean(HeadWt))
+c2a
+```
+
+```{r}
+ggplot(c2a, aes(x=Date, fill=Cult, y=Weight)) + 
+    geom_col(position="dodge")
+```
+
+```{r}
+c2b = c2a %>%
+    ungroup() %>%
+    complete(Cult, Date)
+c2b
+```
+
+```{r}
+ggplot(c2b, aes(x=Date, fill=Cult, y=Weight)) + 
+    geom_col(position="dodge")
+```
+
+```{r}
+ca = cabbages %>%
+    group_by(Cult, Date) %>%
+    summarise(
+        Weight = mean(HeadWt),
+        sd = sd(HeadWt),
+        n = n(),
+        se = sd / sqrt(n)
+        )
+ca
+```
+
+```{r}
+ciMult = qt(.975, ca$n-1)
+ciMult
+```
+
+```{r}
+ca$ci95 = ca$se * ciMult
+ca
+```
+
+```{r}
+summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE){
+    # new version of length which can handle NA's, if na.rm==T, don't count them
+    length2 = function(x, na.rm=FALSE){
+        if (na.rm) sum(!is.na(x))
+        else       x
+    }
+    
+    groupvars = rlang::syms(groupvars)
+    measurevar = rlang::sym(measurevar)
+    
+    datac = data %>%
+        dplyr::group_by(!!!groupvars) %>%
+        dplyr::summarise(
+            N  = length2(!!measurevar, na.rm = na.rm),
+            sd  = sd(!!measurevar, na.rm = na.rm),
+            !!measurevar  := mean(!!measurevar, na.rm = na.rm),
+            se = sd/sqrt(N),
+            # confidence interval for standard error
+            ci = se * qt(conf.interval/2 + .5, N-1)
+            
+        ) %>%
+        dplyr::ungroup() %>%
+        # reaarange the columns
+        dplyr::select(seq_len(ncol(.)-4), ncol(.)-2, sd, se, ci)
+    
+    datac
+}
+```
+
+```{r}
+c2 = cabbages %>%
+    filter(!(Cult == "c52" & Date == "d21"))
+
+c2$HeadWt[c(1, 20, 45)] = NA
+summarySE(c2, "HeadWt", c("Cult", "Date"), conf.interval = .99, na.rm = TRUE, .drop=FALSE)
+```
+
+```{r}
+anthoming
+```
+
+```{r}
+gather(anthoming, condition, count, expt, ctrl)
+```
+
+```{r}
+anthoming %>%
+    gather(condition, count, -angle)
+```
+
+```{r}
+drunk
+```
+
+```{r}
+drunk %>%
+    gather(age, count, '0-29', "30-39")
+```
+
+```{r}
+drunk %>%
+    dplyr::select(sex, "0-29", "30-39") %>%
+    gather(age, count, "0-29", "30-39")
+```
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+plum_wide
+```
+
+```{r}
+plum_wide %>%
+    gather("survival", "count", dead, alive)
+```
+
+```{r}
+co = corneas
+co
+```
+
+```{r}
+corneas %>%
+    mutate(id = row_number()) %>%
+    gather("eye", "thickness", affected, notaffected)
+```
+
+```{r}
+plum
+```
+
+```{r}
+spread(plum, survival, count)
+```
+
+```{r}
+plum %>%
+    unite(length_survival, length, survival) %>%
+    spread(length_survival, count)
+```
+
+```{r}
+nhtemp
+```
+
+```{r}
+as.numeric(time(nhtemp))
+```
+
+```{r}
+as.numeric(nhtemp)
+```
+
+```{r}
+nht = data.frame(year=as.numeric(time(nhtemp)), temp=as.numeric(nhtemp))
+
+```
+
+```{r}
+presidents
+```
+
+```{r}
+pres_rating = data.frame(
+    year = as.numeric(time(presidents)),
+    rating  = as.numeric(presidents)
+)
+pres_rating
+```
+
+```{r}
+pres_rating2 = data.frame(
+    year = as.numeric(floor(time(presidents))),
+    quarter = as.numeric(cycle(presidents)),
+    rating = as.numeric(presidents)
+)
+pres_rating2
+```
+

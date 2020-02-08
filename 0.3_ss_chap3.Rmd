@@ -1,0 +1,322 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+require(tidyverse)
+library(gcookbook)
+```
+
+```{r}
+ggplot(pg_mean, aes(x=group, y=weight)) + 
+    geom_col()
+```
+
+```{r}
+BOD
+str(BOD)
+```
+
+```{r}
+ggplot(BOD, aes(x=Time, y=demand)) + 
+    geom_col()
+```
+
+```{r}
+ggplot(BOD, aes(x=factor(Time), y=demand)) + 
+    geom_col()
+```
+
+```{r}
+ggplot(pg_mean, aes(x=group, y=weight)) + 
+    geom_col(fill = "lightblue", colour = "black")
+
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col(position = "dodge")
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col(position = "dodge", colour="black") + 
+    scale_fill_brewer(palette="Pastel1")
+```
+
+```{r}
+ce = cabbage_exp[1:5, ]
+ce
+```
+```{r}
+ggplot(ce, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col(position = "dodge", colour="black") + 
+    scale_fill_brewer(palette="Pastel1")
+```
+
+```{r}
+str(diamonds)
+```
+
+```{r}
+ggplot(diamonds, aes(x=cut)) + 
+    geom_bar()
+```
+
+```{r}
+ggplot(diamonds, aes(x=carat)) + 
+    geom_histogram()
+
+```
+```{r}
+upc = uspopchange %>%
+    arrange(desc(Change)) %>%
+    slice(1:10)
+```
+
+```{r}
+ggplot(upc, aes(x=Abb, y=Change, fill=Region)) +
+    geom_col()
+```
+
+```{r}
+ggplot(upc, aes(x=reorder(Abb, Change), y=Change, fill=Region)) + 
+    geom_col(colour="black") + 
+    scale_fill_manual(values=c("#669933", "#FFCC66")) + 
+    xlab("State")
+```
+
+```{r}
+climate_sub = climate %>%
+    filter(Source=="Berkeley" & Year >= 1900) %>%
+    mutate(pos=Anomaly10y >= 0)
+climate_sub
+```
+
+```{r}
+ggplot(climate_sub, aes(x=Year, y=Anomaly10y, fill=pos)) + 
+    geom_col(position="identity")
+```
+
+```{r}
+ggplot(climate_sub, aes(x=Year, y=Anomaly10y, fill=pos)) + 
+    geom_col(position="identity", colour="black", size=0.25) + 
+    scale_fill_manual(values=c("#CCEEFF", "#FFDDDD"), guide=FALSE)
+```
+
+
+```{r}
+ggplot(pg_mean, aes(x=group, y=weight)) + 
+    geom_col()
+
+```
+
+```{r}
+ggplot(pg_mean, aes(x=group, y=weight)) + 
+    geom_col(width=0.5)
+```
+
+```{r}
+ggplot(pg_mean, aes(x=group, y=weight)) + 
+    geom_col(width=1)
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col(width=0.5, position=position_dodge(.7))
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col(width=0.5, position="dodge")
+```
+```{r}
+ggplot(cabbage_exp, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col()
+```
+
+```{r}
+cabbage_exp
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col() + 
+    guides(fill=guide_legend(reverse=TRUE))
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col(position=position_stack(reverse = TRUE)) + 
+    guides(fill=guide_legend(reverse=TRUE))
+
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col(colour="black") + 
+    scale_fill_brewer(palette = "Pastel1")
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col(position="fill")
+
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col(position="fill") + 
+    scale_y_continuous(labels=scales::percent)
+```
+
+```{r}
+ggplot(cabbage_exp, aes(x=Date, y=Weight, fill=Cultivar)) + 
+    geom_col(position="fill", colour="black") + 
+    scale_y_continuous(labels=scales::percent) + 
+    scale_fill_brewer(palette="Pastel1")
+
+```
+
+```{r}
+ce = cabbage_exp %>%
+    group_by(Date) %>%
+    mutate(
+        percent_weight = Weight/sum(Weight) * 100,
+        sum_weight = sum(Weight)
+        )
+ce
+```
+
+```{r}
+ggplot(ce, aes(x=Date, y=percent_weight, fill=Cultivar)) + 
+    geom_col()
+```
+
+```{r}
+ce
+```
+
+# 面積図にできるか？
+
+```{r}
+ggplot(ce, aes(x=Date, y=percent_weight, fill=Cultivar)) + 
+    geom_col(aes(width=sum_weight), position="stack")
+
+pos <- 0.5 * (cumsum(w) + cumsum(c(0, w[-length(w)])))
+ggplot() + 
+  geom_bar(aes(x = pos, width = w, y = y, fill = x), stat = "identity") + 
+  scale_x_continuous(labels = x, breaks = pos)
+```
+
+```{r}
+0.5 * (cumsum(ce$sum_weight) + cumsum(c(0, ce$sum_weight[-length(ce$sum_weight)])))
+```
+
+```{r}
+(cumsum(ce$sum_weight) + cumsum(c(0, ce$sum_weight[-length(ce$sum_weight)])))/2
+```
+
+```{r}
+# library(dplyr)
+pos = ce %>%
+    ungroup() %>%
+    dplyr::select(sum_weight) %>%
+    mutate(sum_weight_next = dplyr::lag(sum_weight, default=0)) %>%
+    drop_na() %>%
+    rowSums %>%
+    cumsum / 2
+
+ce$pos = pos
+pos
+```
+
+
+```{r}
+ggplot(ce, aes(x=Date, y=percent_weight, fill=Cultivar)) + 
+    geom_col(position="stack")
+```
+
+```{r}
+diamonds
+```
+
+```{r}
+ggMMplot <- function(var1, var2){
+  require(ggplot2)
+  levVar1 <- length(levels(var1))
+  levVar2 <- length(levels(var2))
+
+  jointTable <- prop.table(table(var1, var2))
+  plotData <- as.data.frame(jointTable)
+  plotData$marginVar1 <- prop.table(table(var1))
+  plotData$var2Height <- plotData$Freq / plotData$marginVar1
+  plotData$var1Center <- c(0, cumsum(plotData$marginVar1)[1:levVar1 -1]) +
+    plotData$marginVar1 / 2
+
+  ggplot(plotData, aes(var1Center, var2Height)) +
+    geom_bar(stat = "identity", aes(width = marginVar1, fill = var2), col = "Black") +
+    geom_text(aes(label = as.character(var1), x = var1Center, y = 1.05)) 
+  }
+
+ggMMplot(diamonds$cut, diamonds$clarity)
+```
+
+```{r}
+install.packages("ggmosaic")
+```
+
+```{r}
+library(ggmosaic)
+
+# Data copied from linked blog post
+df <- data.frame(
+  segment = LETTERS[1:4],
+  segpct = c(40, 30, 20, 10),
+  Alpha = c(60, 40, 30, 25), 
+  Beta = c(25, 30, 30, 25),
+  Gamma = c(10, 20, 20, 25), 
+  Delta = c(5, 10, 20, 25)
+  )
+
+# Convert to "long" for plotting
+df_long <- gather(df, key = "greek_letter", value = "pct", 
+                  -c("segment", "segpct")) %>% 
+  mutate(
+    greek_letter = factor(
+      greek_letter, 
+      levels = c("Alpha", "Beta", "Gamma", "Delta")
+      ),
+    weight = (segpct * pct) / 10000
+    )
+
+# Plot
+ggplot(df_long) +
+  geom_mosaic(aes(x = product(greek_letter, segment), fill = greek_letter,
+                  weight = weight))
+```
+
+```{r}
+df_long
+```
+```{r}
+df
+```
+
+
+```{r}
+df_long = df %>%
+    gather(key=greek_letter, value=value, -segment, -segpct) %>%
+    group_by(segment) %>%
+    mutate(
+        pct = value/sum(value),
+        weight = segpct / 100 * pct
+    ) %>%
+    ungroup()
+```
+
+```{r}
+df_long
+```
+
